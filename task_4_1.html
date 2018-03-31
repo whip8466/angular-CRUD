@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g=" crossorigin="anonymous"></script>
+
+    <script src="//code.angularjs.org/snapshot/angular.min.js"></script>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+<body>
+	<div ng-app="myApp" ng-controller="myController">
+		<div style="margin:20px 20px 0 20px;">
+			<div class="col-md-5" style="border: 1px solid #d1d1d1;">
+				<form name="insertForm">
+					<div class="col-md-12 form-group">
+						<center>
+							<h4>Student Form</h4>
+						</center>
+					</div>
+					<div class="col-md-12 form-group">
+						<div class="col-md-6">
+							<label>Select Priority : </label>
+						</div>
+						<div class="col-md-6">
+							<select name="studentPriority" 
+								ng-model="data.selectedOption" 
+							 	ng-options="option.priority for option in data.availableOptions track by option.priority"
+							 	class ="form-control"></select>
+						</div>
+					</div>
+					<div class="col-md-12 form-group">
+						<div class="col-md-6">
+							<label>Enter Name : </label>
+						</div>
+						<div class="col-md-6">
+							<input type="text" class="col-md-6 form-control" ng-model="studentName" name="studentName">
+						</div>
+					</div>
+					<div class="col-md-12 form-group">
+						<div class="col-md-6">
+							<label>Enter Address : </label>
+						</div>
+						<div class="col-md-6">
+							<input type="text" class="col-md-6 form-control" ng-model="studentAddress" name="studentAddress">
+						</div>
+					</div>
+					<div class="col-md-12 form-group">
+						<div class="col-md-6">
+							<label>Gender : </label>
+						</div>
+						<div class="col-md-6">
+							<input type="radio" ng-model="gender" name="gender" id="male" value="M"><label for="male">&nbsp;Male&nbsp;&nbsp;</label>
+							<input type="radio" ng-model="gender" name="gender" id="female" value="F"><label for="female">&nbsp;Female</label>
+						</div>
+					</div>
+					<div class="col-md-12 form-group">
+						<center>
+							<input type="submit" ng-show="showAdd" ng-click ="addStudent()" class="btn btn-primary" name="submit" value="Add">
+							<input type="submit" ng-show="showUpdate" ng-click ="UpdateStudent()" class="btn btn-primary" name="submit" value="Update">
+						</center>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-7">
+				<table class="table table-bordered table-striped">
+					<tr>
+						<th ng-click="orderByMe('setPrority');">Priority</th>
+						<th ng-click="orderByMe('studentName');">Name</th>
+						<th ng-click="orderByMe('studentAddress');">Address</th>
+						<th ng-click="orderByMe('gender');">Gender</th>
+						<th>Action</th>
+					</tr>
+					<tr ng-repeat="student in allStudents | orderBy:setOrderBy" ng-if="allStudents.length > 0">
+						<td>{{student.setPrority}}</td>
+						<td>{{student.studentName}}</td>
+						<td>{{student.studentAddress}}</td>
+						<td>{{student.gender}}</td>
+						<td>
+							<button class="btn btn-info" ng-click="editStudent(student)">Edit</button>
+							<button class="btn btn-danger" ng-click="deleteStudent(student)">Delete</button>
+						</td>
+					</tr>						
+					<tr ng-if="allStudents.length == 0">
+						<td colspan="5">No record Found !</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		angular.module('myApp', []).
+		controller('myController', function($scope){
+			$scope.showAdd 			= 	true;
+			$scope.showUpdate 		= 	false;
+			$scope.studentIndex;
+			$scope.data 	=	{
+				availableOptions 	:	[
+					{ priority:"Heigh"},
+					{ priority:"Medium"},
+					{ priority:"Low"}
+				],
+				selectedOption 	:	{ priority:"Medium"}
+			};
+			$scope.setOrderBy;
+
+			$scope.allStudents 	=	[
+				{setPrority: 'Low', studentName : 'Jony Deep', studentAddress : 'United States', gender: 'M'},
+				{setPrority: 'Heigh', studentName : 'Felicity Smoak', studentAddress : 'Canada', gender: 'F'},
+			];
+
+			$scope.addStudent 	=	function(){
+				$scope.allStudents.push(
+					{
+						setPrority 	: $scope.data.selectedOption.priority,
+						studentName : $scope.studentName,
+						studentAddress : $scope.studentAddress,
+						gender 	: $scope.gender
+					}
+				);
+				$scope.data.selectedOption.priority 	=	$scope.studentName 		=	$scope.studentAddress 	=	$scope.gender 	=	'';
+			}
+
+			$scope.editStudent 	=	function(data){
+				$scope.studentIndex 					=	$scope.allStudents.indexOf(data)
+				$scope.data.selectedOption.priority 	=	data.setPrority;
+				$scope.studentName 						=	data.studentName;
+				$scope.studentAddress 					=	data.studentAddress;
+				$scope.gender 							=	data.gender;
+				$scope.showAdd 							= 	false;
+				$scope.showUpdate 						= 	true;
+			}
+
+			$scope.deleteStudent 	=	function(data){
+				if(confirm('Are you sure?')){
+					$scope.allStudents.splice($scope.allStudents.indexOf(data), 1);
+				}
+			}
+
+			$scope.UpdateStudent 	=	function(){
+				$scope.allStudents[$scope.studentIndex].setPrority 		=	$scope.data.selectedOption.priority;
+				$scope.allStudents[$scope.studentIndex].studentName 	=	$scope.studentName;
+				$scope.allStudents[$scope.studentIndex].studentAddress 	=	$scope.studentAddress;
+				$scope.allStudents[$scope.studentIndex].gender 			=	$scope.gender;
+				$scope.showAdd 			= 	true;
+				$scope.showUpdate 		= 	false;
+				$scope.data.selectedOption.priority 	=	$scope.studentName 		=	$scope.studentAddress 	=	$scope.gender 	='';
+			}
+
+			$scope.orderByMe 	=	function(setOrderBy){
+				$scope.setOrderBy 	=	setOrderBy;
+			}
+		});
+	</script>
+</body>
+</html>
