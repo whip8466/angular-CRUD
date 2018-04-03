@@ -1,7 +1,7 @@
 # angular-CRUD
 This is like SPA(single page web application).
 
-This  demo is good for biegginer.
+This  demo is good for beginner.
 
 here I designed Angular form and Table. user can insert or update record using same form only.
 
